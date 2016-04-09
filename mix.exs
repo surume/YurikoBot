@@ -14,7 +14,7 @@ defmodule YurikoBot.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:httpotion, :logger, :trot] ]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +27,8 @@ defmodule YurikoBot.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:httpotion, "~> 2.2.0"},
+     {:poison, "~> 1.5.2"},
+     {:trot, github: "hexedpackets/trot"}]
   end
 end
