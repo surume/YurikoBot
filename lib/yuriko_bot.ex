@@ -1,0 +1,2 @@
+defmodule YurikoBot do
+end
