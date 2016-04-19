@@ -1,20 +1,9 @@
 # YurikoBot
 
-**TODO: Add description**
+## usage
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add yuriko_bot to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:yuriko_bot, "~> 0.0.1"}]
-        end
-
-  2. Ensure yuriko_bot is started before your application:
-
-        def application do
-          [applications: [:yuriko_bot]]
-        end
-
+```sh
+$ git clone https://github.com/Surume/YurikoBot.git
+$ mix deps.get
+$ export LINE_CHANNEL_ID=xxxxxxxxxx; export LINE_CHANNEL_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx; export LINE_CHANNEL_MID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx; elixir --detached -S  mix trot.server
+```
