@@ -1,20 +1,36 @@
 defmodule YurikoBot do
   use Trot.Router
 
-  defp eventUrl, do: "https://trialbot-api.line.me/v1/events"
+  defp event_url, do: "https://trialbot-api.line.me/v1/events"
 
   post "/callback" do
     {:ok, body, _} = read_body(conn)
-    bodyJson = Poison.decode!(body)
-    content = List.first(bodyJson["result"])["content"]
+    body_json = Poison.decode!(body)
+    content = List.first(body_json["result"])["content"]
     mid = content["from"]
     text = content["text"]
-    context = context(text)
 
-    multipleMessages(mid, context) |> Poison.encode! |> send
+    max_lengs = 9
+    fetchers = for _ <- 1..max_lengs, do: spawn_link fn ->
+      YurikoBot.fetch_content()
+    end
+
+    Enum.each(0..Enum.random(0..max_lengs-1), fn(x) ->
+      context = context(text)
+      send Enum.at(fetchers,x), {self, mid, context}
+    end)
   end
 
-  defp send(body), do: HTTPotion.post eventUrl, [body: body, headers: headers]
+  def fetch_content do
+    receive do
+      {caller, mid, context} ->
+        multiple_messages(mid, context)
+        |> Poison.encode!
+        |> send
+    end
+  end
+
+  defp send(body), do: HTTPotion.post event_url, [body: body, headers: headers]
 
   defp headers do
     [
@@ -50,7 +66,7 @@ defmodule YurikoBot do
     |> Enum.random
   end
 
-  defp multipleMessages(mid, {text, img}) do
+  defp multiple_messages(mid, {text, img}) do
     %{
       to: [mid],
       toChannel: 1383378250,
@@ -58,14 +74,14 @@ defmodule YurikoBot do
       content: %{
         messageNotified: 0,
         messages: [
-          textMessage(text),
-          imageMessage(img, img)
+          text_message(text),
+          image_message(img, img)
         ]
       }
     }
   end
 
-  defp textMessage(text) do
+  defp text_message(text) do
     %{
       contentType: 1,
       toType: 1,
@@ -73,12 +89,12 @@ defmodule YurikoBot do
     }
   end
 
-  defp imageMessage(orgContentUrl, prevImgUrl) do
+  defp image_message(org_content_url, prev_img_url) do
     %{
       contentType: 2,
       toType: 2,
-      originalContentUrl: orgContentUrl,
-      previewImageUrl: prevImgUrl
+      originalContentUrl: org_content_url,
+      previewImageUrl: prev_img_url
     }
   end
 end
